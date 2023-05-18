@@ -1,45 +1,48 @@
 package com.mygdx.game;
 
-import
+import static com.mygdx.game.MyGame.SCR_HEIGHT;
+import static com.mygdx.game.MyGame.SCR_WIDTH;
+
+import com.badlogic.gdx.math.MathUtils;
 
 public class Duck {
     MyGame mgg;
-    Float x,y;
+    float x, y;
     float vx, vy;
     float width, height;
     int faza, nFaz = 10;
     boolean isAlive = true;
 
-    public Duck(MyGame MyGame) {
-        mgg = MyGame;
-        width = height = MathUtils.random(mgg.sizeDuck - 30, mgg.sizeDuck + 30);
+    public Duck(MyGame myGdxGame){
+        mgg = myGdxGame;
+        width = height = MathUtils.random(mgg.sizeMosquitos-30, mgg.sizeMosquitos+30);
         x = SCR_WIDTH / 2f - width / 2;
         y = SCR_HEIGHT / 2f - height / 2;
-        vx = MathUtils.random(-mgg.speedDuck, mgg.speedDuck);
-        vy = MathUtils.random(-mgg.speedDuck, mgg.speedDuck);
-        faza = MathUtils.random(0, nFaz - 1);
+        vx = MathUtils.random(-mgg.speedMosquitos, mgg.speedMosquitos);
+        vy = MathUtils.random(-mgg.speedMosquitos, mgg.speedMosquitos);
+        faza = MathUtils.random(0, nFaz-1);
     }
 
-    Void fly(){
-    x += vx;
-    y =+ vy;}
-    if(isAlive)  {
-        outOfBounds2();
-        ChangePhase();
+    void fly(){
+        x += vx;
+        y += vy;
+        if(isAlive) {
+            outOfBounds2();
+            changePhase();
+        }
     }
-}
 
-void outOfBounds1(){
-    if(x<0 || x>SCR_WIDTH -width) vx = -vx
-    if(y<0 || y>SCR_HEIGHT -height) vy = -vy;
-}
+    void outOfBounds1(){
+        if(x<0 || x> SCR_WIDTH -width) vx = -vx;
+        if(y<0 || y> SCR_HEIGHT -height) vy = -vy;
+    }
 
-void outOfBounds2(){
- if(x<0-width) x = SCR_WIDTH;
+    void outOfBounds2(){
+        if(x<0-width) x = SCR_WIDTH;
         if(x> SCR_WIDTH) x = 0-width;
         if(y<0-height) y = SCR_HEIGHT;
         if(y> SCR_HEIGHT) y = 0-height;
-}
+    }
 
     void changePhase(){
         if(++faza == nFaz) faza = 0;

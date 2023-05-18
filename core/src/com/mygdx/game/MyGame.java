@@ -1,19 +1,17 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MyGame extends Game {
 	public static final int SCR_WIDTH = 1280;
-			public static final int = 720;
+	public static final int SCR_HEIGHT = 720;
 
 	SpriteBatch batch; // ссылка на объект, отвечающий за вывод изображений
 	OrthographicCamera camera;
@@ -30,9 +28,9 @@ public class MyGame extends Game {
 	boolean musicOn = true;
 	public static final int MODE_EASY = 0, MODE_NORMAL = 1, MODE_HARD = 2;
 	int modeOfGame = MODE_EASY; // сложность игры
-	int numDucks = 5;
-	float sizeDucks =150;
-	float speedDucks = 5;
+	int numMosquitos = 5;
+	float sizeMosquitos = 150;
+	float speedMosquitos = 5;
 
 	@Override
 	public void create () {
@@ -51,8 +49,9 @@ public class MyGame extends Game {
 
 		setScreen(screenIntro);
 	}
+
 	void createFont(){
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("mr_countryhouse.ttf"));
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("mp_ducky.ttf"));
 		//FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("comic.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		parameter.characters = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";

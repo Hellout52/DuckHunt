@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -10,7 +11,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class InputKeyBoard {
+public class InputKeyboard {
     private boolean endOfEdit;
 
     private final float x, y; // координаты
@@ -20,7 +21,7 @@ public class InputKeyBoard {
     private final int textLength; // длина вводимого текста
 
     private BitmapFont font;
-    private final String fontName  = "mr_ducky.ttf";
+    private final String fontName = "mp_ducky.ttf";
 
     private String text = ""; // вводимый текст
     private static final String LETTERS_EN_CAPS = "1234567890-~QWERTYUIOP+?^ASDFGHJKL;'`ZXCVBNM<> |";
@@ -231,4 +232,3 @@ public class InputKeyBoard {
         font.dispose();
     }
 }
-
