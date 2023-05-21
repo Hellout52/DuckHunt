@@ -58,7 +58,7 @@ public class MyGame extends Game {
 		parameter.size = 50;
 		parameter.color = Color.CHARTREUSE;
 		parameter.borderWidth = 2;
-		parameter.borderColor = Color.BLACK;
+		parameter.borderColor = Color.FOREST;
 		font = generator.generateFont(parameter);
 
 		parameter.size = 70;

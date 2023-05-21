@@ -10,16 +10,22 @@ public class Duck {
     float x, y;
     float vx, vy;
     float width, height;
-    int faza, nFaz = 10;
+    int faza, nFaz = 12;
     boolean isAlive = true;
 
     public Duck(MyGame myGdxGame){
         mgg = myGdxGame;
         width = height = MathUtils.random(mgg.sizeMosquitos-30, mgg.sizeMosquitos+30);
-        x = SCR_WIDTH / 2f - width / 2;
-        y = SCR_HEIGHT / 2f - height / 2;
-        vx = MathUtils.random(-mgg.speedMosquitos, mgg.speedMosquitos);
-        vy = MathUtils.random(-mgg.speedMosquitos, mgg.speedMosquitos);
+        if (MathUtils.random(0,1) == 0){
+            x = MathUtils.random(-SCR_WIDTH, -width);
+            vx = MathUtils.random(5, 10);
+        }
+        else {
+            x = MathUtils.random(SCR_WIDTH+width, SCR_WIDTH*2);
+            vx = MathUtils.random(-10, -5);
+        }
+        y = MathUtils.random(SCR_HEIGHT/3, SCR_HEIGHT-height);
+        vy = MathUtils.random(-0.5f, 0.5f);
         faza = MathUtils.random(0, nFaz-1);
     }
 
@@ -27,7 +33,7 @@ public class Duck {
         x += vx;
         y += vy;
         if(isAlive) {
-            outOfBounds2();
+            //outOfBounds2();
             changePhase();
         }
     }
@@ -56,7 +62,7 @@ public class Duck {
     boolean hit(float tx, float ty){
         if(x < tx && tx < x+width && y < ty && ty < y+height){
             isAlive = false;
-            faza = 10;
+            faza = nFaz;
             vx = 0;
             vy = -8;
             return true;

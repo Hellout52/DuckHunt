@@ -9,14 +9,19 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.sun.tools.javac.comp.Enter;
+
+import java.util.ArrayList;
 
 public class ScreenGame implements Screen {
 	MyGame mgg;
 
-	Texture[] imgMosq = new Texture[11]; // ссылка на текстуры (картинки)
+	Texture imgDuckAtlas;
+	TextureRegion[] imgDuck = new TextureRegion[13]; // ссылка на текстуры (картинки)
 	Texture imgBackGround; // фон
 	Texture imgBtnMenu;
 
@@ -24,9 +29,10 @@ public class ScreenGame implements Screen {
 	Music sndMusic;
 
 	// создание массива ссылок на объекты
-	Duck[] mosq;
+	ArrayList<Duck> ducks = new ArrayList<>();
 	int kills;
 	long timeStart, timeCurrent;
+	long timeSpawnDuck, timeSpawnDuckInterval = 500;
 
 	// состояние игры
 	public static final int PLAY_GAME = 0, ENTER_NAME = 1, SHOW_TABLE = 2;
@@ -37,14 +43,16 @@ public class ScreenGame implements Screen {
 	DuckButton btnRestart, btnExit;
 	DuckButton btnMenu;
 
+
 	public ScreenGame (MyGame myGdxGame) {
 		mgg = myGdxGame;
 
 		// создаём объекты изображений
-		for(int i=0; i<imgMosq.length; i++){
-			imgMosq[i] = new Texture("mosq"+i+".png");
+		imgDuckAtlas = new Texture ("duck_atlas.png");
+		for(int i=0; i<imgDuck.length; i++){
+			imgDuck[i] = new TextureRegion(imgDuckAtlas, i*400, 0, 400, 400);
 		}
-		imgBackGround = new Texture("backgrounds/bg_boloto.jpg");
+		imgBackGround = new Texture("backgrounds/bg_intro.png");
 		imgBtnMenu = new Texture("menu.png");
 
 		// создаём объекты звуков
@@ -80,12 +88,12 @@ public class ScreenGame implements Screen {
 			mgg.touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			mgg.camera.unproject(mgg.touch);
 			if(gameState == PLAY_GAME) {
-				for (int i = mosq.length - 1; i >= 0; i--) {
-					if (mosq[i].isAlive) {
-						if (mosq[i].hit(mgg.touch.x, mgg.touch.y)) {
+				for (int i = ducks.size() - 1; i >= 0; i--) {
+					if (ducks.get(i).isAlive) {
+						if (ducks.get(i).hit(mgg.touch.x, mgg.touch.y)) {
 							kills++;
 							if(mgg.soundOn) sndMosq[MathUtils.random(0, 3)].play();
-							if (kills == mosq.length) {
+							if (kills == ducks.size()) {
 								gameState = ENTER_NAME;
 							}
 							break;
@@ -112,11 +120,15 @@ public class ScreenGame implements Screen {
 		}
 
 		// события игры
-		for (int i = 0; i < mosq.length; i++) {
-			mosq[i].fly();
+		spawnDuck();
+		for (int i = 0; i < ducks.size(); i++) {
+			ducks.get(i).fly();
 		}
 		if(gameState == PLAY_GAME) {
 			timeCurrent = TimeUtils.millis() - timeStart;
+			if(timeCurrent > 10000){
+				gameState = ENTER_NAME;
+			}
 		}
 
 		// отрисовка всего
@@ -124,15 +136,15 @@ public class ScreenGame implements Screen {
 		mgg.batch.setProjectionMatrix(mgg.camera.combined);
 		mgg.batch.begin();
 		mgg.batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
-		for(int i=0; i<mosq.length; i++) {
-			mgg.batch.draw(imgMosq[mosq[i].faza], mosq[i].x, mosq[i].y, mosq[i].width, mosq[i].height, 0, 0, 500, 500, mosq[i].isFlip(), false);
+		for(int i = 0; i< ducks.size(); i++) {
+			mgg.batch.draw(imgDuck[ducks.get(i).faza], ducks.get(i).x, ducks.get(i).y, ducks.get(i).width/2, ducks.get(i).height/2, ducks.get(i).width, ducks.get(i).height, ducks.get(i).isFlip()?-1:1, 1, 0);
 		}
-		mgg.font.draw(mgg.batch, "MOSQUITOS KILLED: "+kills, 10, SCR_HEIGHT-10);
+		mgg.font.draw(mgg.batch, "Duck KILLED: "+kills, 10, SCR_HEIGHT-10);
 		mgg.font.draw(mgg.batch, "TIME: "+timeToString(timeCurrent), SCR_WIDTH-500, SCR_HEIGHT-10);
 		if(gameState == SHOW_TABLE) {
 			mgg.fontLarge.draw(mgg.batch,"Game Over", 0, 600, SCR_WIDTH, Align.center, true);
 			for (int i = 0; i < players.length; i++) {
-				String s = players[i].name + "......." + timeToString(players[i].time);
+				String s = players[i].name + "......." + players[i].kills;
 				mgg.font.draw(mgg.batch, s, 0, 500-i*50, SCR_WIDTH, Align.center, true);
 			}
 			mgg.font.draw(mgg.batch, btnRestart.text, btnRestart.x, btnRestart.y);
@@ -167,9 +179,7 @@ public class ScreenGame implements Screen {
 
 	@Override
 	public void dispose () {
-		for (int i = 0; i < imgMosq.length; i++) {
-			imgMosq[i].dispose();
-		}
+		imgDuckAtlas.dispose();
 		for (int i = 0; i < sndMosq.length; i++) {
 			sndMosq[i].dispose();
 		}
@@ -184,11 +194,7 @@ public class ScreenGame implements Screen {
 	}
 
 	void gameStart(){
-		// создание объектов комаров
-		mosq = new Duck[mgg.numMosquitos];
-		for(int i=0; i<mosq.length; i++) {
-			mosq[i] = new Duck(mgg);
-		}
+
 		kills = 0;
 		gameState = PLAY_GAME;
 		timeStart = TimeUtils.millis();
@@ -197,7 +203,7 @@ public class ScreenGame implements Screen {
 	void gameOver(){
 		gameState = SHOW_TABLE;
 		players[players.length-1].name = mgg.keyboard.getText();
-		players[players.length-1].time = timeCurrent;
+		players[players.length-1].kills = kills;
 		sortTableOfRecords();
 		saveTableOfRecords();
 	}
@@ -206,7 +212,7 @@ public class ScreenGame implements Screen {
 		Preferences prefs = Gdx.app.getPreferences("Table Of Records");
 		for (int i = 0; i < players.length; i++) {
 			prefs.putString("name"+i, players[i].name);
-			prefs.putLong("time"+i, players[i].time);
+			prefs.putInteger("kills"+i, players[i].kills);
 		}
 		prefs.flush();
 	}
@@ -215,20 +221,18 @@ public class ScreenGame implements Screen {
 		Preferences prefs = Gdx.app.getPreferences("Table Of Records");
 		for (int i = 0; i < players.length; i++) {
 			if(prefs.contains("name"+i)) players[i].name = prefs.getString("name"+i);
-			if(prefs.contains("time"+i)) players[i].time = prefs.getLong("time"+i);
+			if(prefs.contains("kills"+i)) players[i].kills = prefs.getInteger("kills"+i);
 		}
 	}
 
 	void sortTableOfRecords(){
-		for (int i = 0; i < players.length; i++) {
-			if(players[i].time == 0) players[i].time = 1000000;
-		}
+
 		for (int j = 0; j < players.length-1; j++) {
 			for (int i = 0; i < players.length-1; i++) {
-				if(players[i].time>players[i+1].time){
-					long c = players[i].time;
-					players[i].time = players[i+1].time;
-					players[i+1].time = c;
+				if(players[i].kills<players[i+1].kills){
+					int c = players[i].kills;
+					players[i].kills = players[i+1].kills;
+					players[i+1].kills = c;
 					String s = players[i].name;
 					players[i].name = players[i+1].name;
 					players[i+1].name = s;
@@ -238,15 +242,18 @@ public class ScreenGame implements Screen {
 				}
 			}
 		}
-		for (int i = 0; i < players.length; i++) {
-			if(players[i].time == 1000000) players[i].time = 0;
-		}
 	}
 
 	void clearTableOfRecords(){
 		for (int i = 0; i < players.length; i++) {
 			players[i].name = "Noname";
-			players[i].time = 0;
+			players[i].kills = 0;
+		}
+	}
+	void spawnDuck(){
+		if (timeSpawnDuck + timeSpawnDuckInterval < TimeUtils.millis()){
+			ducks.add(new Duck(mgg));
+			timeSpawnDuck = TimeUtils.millis();
 		}
 	}
 }

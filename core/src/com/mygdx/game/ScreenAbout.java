@@ -22,7 +22,7 @@ public class ScreenAbout implements Screen {
 
     public ScreenAbout(MyGame myGdxGame){
         mgg = myGdxGame;
-        imgBackGround = new Texture("backgrounds/bg_about.jpg");
+        imgBackGround = new Texture("backgrounds/bg_about.png");
         // создаём кнопки
 
         btnBack = new DuckButton(mgg.fontLarge, "BACK", 500, 150);

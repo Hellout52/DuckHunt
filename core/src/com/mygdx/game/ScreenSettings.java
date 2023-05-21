@@ -14,7 +14,7 @@ public class ScreenSettings implements Screen {
 
     public ScreenSettings(MyGame myGdxGame){
         mgg = myGdxGame;
-        imgBackGround = new Texture("backgrounds/bg_settings.jpg");
+        imgBackGround = new Texture("backgrounds/bg_settings.png");
         // создаём кнопки
         btnMode = new DuckButton(mgg.fontLarge, "Mode: Easy", 00500, 550);
         btnSound = new DuckButton(mgg.fontLarge, "Sound: ON", 5, 450);
