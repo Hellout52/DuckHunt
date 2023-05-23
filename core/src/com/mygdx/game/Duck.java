@@ -12,6 +12,8 @@ public class Duck {
     float width, height;
     int faza, nFaz = 12;
     boolean isAlive = true;
+    boolean isKryak;
+    boolean isFlip;
 
     public Duck(MyGame myGdxGame){
         mgg = myGdxGame;
@@ -34,7 +36,17 @@ public class Duck {
         y += vy;
         if(isAlive) {
             //outOfBounds2();
+            isFlip = vx > 0;
             changePhase();
+        }
+        kryak();
+    }
+
+    void kryak(){
+        if(isKryak) {
+            isKryak = false;
+        } else {
+            if(MathUtils.random(500) == 1) isKryak = true;
         }
     }
 
@@ -53,10 +65,6 @@ public class Duck {
     void changePhase(){
         if(++faza == nFaz) faza = 0;
         //faza = ++faza % nFaz;
-    }
-
-    boolean isFlip(){
-        return vx>0;
     }
 
     boolean hit(float tx, float ty){

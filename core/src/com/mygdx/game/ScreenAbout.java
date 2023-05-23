@@ -17,13 +17,13 @@ public class ScreenAbout implements Screen {
                         "в рамках проекта Mobile Game\n" +
                         "Development на языке Java\n" +
                         "с использованием LibGDX.\n" +
-                        "Цель игры: сбить как можно больше уток за 30 секунд.";
+                        "Цель игры: сбить как можно\n" +
+                        "больше уток за 30 секунд.";
 
     public ScreenAbout(MyGame myGdxGame){
         mgg = myGdxGame;
         imgBackGround = new Texture("backgrounds/bg_about.png");
         // создаём кнопки
-
         btnBack = new DuckButton(mgg.fontLarge, "BACK", 500, 150);
     }
 

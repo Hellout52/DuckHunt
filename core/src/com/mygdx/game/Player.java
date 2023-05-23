@@ -2,10 +2,11 @@ package com.mygdx.game;
 
 public class Player {
     String name;
-    long time;
+    int kills;
 
-    public Player(String name, long time) {
+    public Player(String name, int kills) {
         this.name = name;
-        this.time = time;
+        this.kills = kills;
     }
+
 }

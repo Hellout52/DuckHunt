@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class InputKeyBoard {
+public class InputKeyboard {
     private boolean endOfEdit;
 
     private final float x, y; // координаты
@@ -39,7 +39,7 @@ public class InputKeyBoard {
     private int keyPressed = -1; // код нажатой кнопки
     private final Array<Key> keys = new Array<>(); // список всех кноп
 
-    public InputKeyBoard(float scrWidth, float scrHeight, int textLength){
+    public InputKeyboard(float scrWidth, float scrHeight, int textLength){
         generateFont();
         this.textLength = textLength; // количество вводимых символов
 

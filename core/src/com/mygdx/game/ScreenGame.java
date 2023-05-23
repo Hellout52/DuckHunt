@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.sun.tools.javac.comp.Enter;
 
 import java.util.ArrayList;
 
@@ -25,7 +24,8 @@ public class ScreenGame implements Screen {
 	Texture imgBackGround; // фон
 	Texture imgBtnMenu;
 
-	Sound[] sndMosq = new Sound[4];
+	Sound[] sndDuck = new Sound[4];
+	Sound sndShot;
 	Music sndMusic;
 
 	// создание массива ссылок на объекты
@@ -56,9 +56,10 @@ public class ScreenGame implements Screen {
 		imgBtnMenu = new Texture("menu.png");
 
 		// создаём объекты звуков
-		for(int i=0; i<sndMosq.length; i++) {
-			sndMosq[i] = Gdx.audio.newSound(Gdx.files.internal("sound/mos"+i+".mp3"));
+		for(int i = 0; i< sndDuck.length; i++) {
+			sndDuck[i] = Gdx.audio.newSound(Gdx.files.internal("sound/duck"+i+".mp3"));
 		}
+		sndShot = Gdx.audio.newSound(Gdx.files.internal("sound/huntergun2.mp3"));
 		sndMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/soundcrazymosquitos.mp3"));
 		sndMusic.setLooping(true);
 		sndMusic.setVolume(0.2f);
@@ -88,11 +89,11 @@ public class ScreenGame implements Screen {
 			mgg.touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			mgg.camera.unproject(mgg.touch);
 			if(gameState == PLAY_GAME) {
+				if(mgg.soundOn) sndShot.play();
 				for (int i = ducks.size() - 1; i >= 0; i--) {
 					if (ducks.get(i).isAlive) {
 						if (ducks.get(i).hit(mgg.touch.x, mgg.touch.y)) {
 							kills++;
-							if(mgg.soundOn) sndMosq[MathUtils.random(0, 3)].play();
 							if (kills == ducks.size()) {
 								gameState = ENTER_NAME;
 							}
@@ -123,6 +124,9 @@ public class ScreenGame implements Screen {
 		spawnDuck();
 		for (int i = 0; i < ducks.size(); i++) {
 			ducks.get(i).fly();
+			if(mgg.soundOn)
+				if(ducks.get(i).isKryak)
+					sndDuck[MathUtils.random(0,1)].play();
 		}
 		if(gameState == PLAY_GAME) {
 			timeCurrent = TimeUtils.millis() - timeStart;
@@ -137,7 +141,9 @@ public class ScreenGame implements Screen {
 		mgg.batch.begin();
 		mgg.batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
 		for(int i = 0; i< ducks.size(); i++) {
-			mgg.batch.draw(imgDuck[ducks.get(i).faza], ducks.get(i).x, ducks.get(i).y, ducks.get(i).width/2, ducks.get(i).height/2, ducks.get(i).width, ducks.get(i).height, ducks.get(i).isFlip()?-1:1, 1, 0);
+			mgg.batch.draw(imgDuck[ducks.get(i).faza], ducks.get(i).x, ducks.get(i).y,
+					ducks.get(i).width/2, ducks.get(i).height/2, ducks.get(i).width, ducks.get(i).height,
+					ducks.get(i).isFlip?-1:1, 1, 0);
 		}
 		mgg.font.draw(mgg.batch, "Duck KILLED: "+kills, 10, SCR_HEIGHT-10);
 		mgg.font.draw(mgg.batch, "TIME: "+timeToString(timeCurrent), SCR_WIDTH-500, SCR_HEIGHT-10);
@@ -180,8 +186,8 @@ public class ScreenGame implements Screen {
 	@Override
 	public void dispose () {
 		imgDuckAtlas.dispose();
-		for (int i = 0; i < sndMosq.length; i++) {
-			sndMosq[i].dispose();
+		for (int i = 0; i < sndDuck.length; i++) {
+			sndDuck[i].dispose();
 		}
 		sndMusic.dispose();
 		imgBackGround.dispose();
@@ -194,8 +200,8 @@ public class ScreenGame implements Screen {
 	}
 
 	void gameStart(){
-
 		kills = 0;
+		ducks.clear();
 		gameState = PLAY_GAME;
 		timeStart = TimeUtils.millis();
 	}
