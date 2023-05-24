@@ -130,7 +130,7 @@ public class ScreenGame implements Screen {
 		}
 		if(gameState == PLAY_GAME) {
 			timeCurrent = TimeUtils.millis() - timeStart;
-			if(timeCurrent > 10000){
+			if(timeCurrent > 30000){
 				gameState = ENTER_NAME;
 			}
 		}
